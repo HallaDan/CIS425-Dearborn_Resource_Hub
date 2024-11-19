@@ -48,3 +48,15 @@ CREATE TABLE IF NOT EXISTS business_ar (
     FOREIGN key (arBusinessID) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 )
 
+
+CREATE TABLE IF NOT EXISTS admin_approval (
+    id INT(6) AUTO_INCREMENT PRIMARY KEY,
+    businessID INT(6) NOT NULL,
+    businessName VARCHAR(255) NOT NULL,
+    businessCategory VARCHAR(50) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    businessPhone VARCHAR(50) NOT NULL,
+    website VARCHAR(50) NOT NULL,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN key (businessID) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+)
