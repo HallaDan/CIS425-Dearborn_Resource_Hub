@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$successMessage = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     // Fetch form data
     $businessName = $_POST['businessName'];
@@ -19,8 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     // Fetch the currently signed-in user's ID
     $businessID = $_SESSION['user_id'];
     
-    $successMessage = '';
-
     try {
         // Prepare and bind
         $stmt = $conn->prepare("INSERT INTO admin_approval (businessID, businessName, businessCategory, address, businessPhone, website) VALUES (?, ?, ?, ?, ?, ?)");
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
                 <?php echo $successMessage; ?>
             </div>
         <?php endif; ?>
-        <form method="post" action="submit_business.php">
+        <form method="post" action="SubmissionPage.php">
             <label for="businessName">Business Name:</label>
             <input type="text" id="businessName" name="businessName" required>
             
