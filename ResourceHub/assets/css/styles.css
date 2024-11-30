@@ -1,0 +1,104 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fdd835;
+    color: #1a237e;
+}
+
+header {
+    display: flex;
+    justify-content: space-between; /* Align header text and hamburger on opposite sides */
+    align-items: center; /* Vertically align elements */
+    background-color: #1a237e;
+    color: white;
+    padding: 15px 20px; /* Adjust padding for consistent height */
+    border-radius: 15px; /* Rounded corners for the header */
+    margin: 20px auto; /* Center header and add spacing */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    position: relative;
+}
+
+/* Navigation container */
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/* Hamburger dropdown menu */
+.hamburger-menu {
+    list-style: none;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    background-color: white;
+    color: black;
+    position: absolute;
+    right: 20px;
+    top: 70px; /* Adjusted to drop below the header */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.hamburger-menu li {
+    padding: 10px 0;
+}
+
+/* Dropdown button styling */
+/* Style the hamburger menu */
+.dropdown {
+    display: flex;
+    align-items: center;
+}
+
+
+.dropdown-toggle {
+    background-color: #3949ab;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 25%; /* Rounded button */
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    height: 50px; /* Match height of the header for consistency */
+    width: 50px; /* Create a square button */
+}
+
+.dropdown-toggle:hover {
+    background-color: #283593;
+}
+
+/* Language selector styling */
+.language-selector {
+    padding: 20px;
+    background-color: white;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 165px;
+}
+
+.content {
+    padding: 20px;
+}
+
+/* Button styling */
+button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #1a237e;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #283593;
+}
