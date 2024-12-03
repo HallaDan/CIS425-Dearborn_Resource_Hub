@@ -99,6 +99,9 @@ $lang = $translations[$_SESSION['lang']];
         <div class="nav-container">
             <h1>Multilingual Resource Hub</h1>
         </div>
+    </header>
+
+    <div class="hamburger-container">
         <div class="dropdown">
             <button class="dropdown-toggle">☰</button>
             <ul class="hamburger-menu">
@@ -107,7 +110,7 @@ $lang = $translations[$_SESSION['lang']];
                 <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
             </ul>
         </div>
-    </header>
+    </div>
 
     <main>
         <section class="language-selector-container">
@@ -120,7 +123,10 @@ $lang = $translations[$_SESSION['lang']];
                     <button type="submit">Apply</button>
                 </form>
             </div>
-            <img src="assets/images/homepage.jpg" alt="Community helping image">
+            <div class="images-container">
+                <img src="assets/images/dearbornlogo.png" alt="Dearborn Logo">
+                <img src="assets/images/homepage.jpg" alt="Community helping image">
+            </div>
         </section>
         <section class="welcome-box">
             <h2><?= $lang['welcome'] ?></h2>
