@@ -17,16 +17,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $address = $_POST['address'];
     $businessPhone = $_POST['businessPhone'];
     $website = $_POST['website'];
+    $language = $_POST['language'];
     
     // Fetch the currently signed-in user's ID
     $businessID = $_SESSION['user_id'];
     
     try {
         // Prepare and bind
-        $stmt = $conn->prepare("INSERT INTO admin_approval (businessID, businessName, businessCategory, address, businessPhone, website) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO admin_approval (businessID, businessName, businessCategory, address, businessPhone, website, language) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
         // Execute the statement with the data
-        $stmt->execute([$businessID, $businessName, $businessCategory, $address, $businessPhone, $website]);
+        $stmt->execute([$businessID, $businessName, $businessCategory, $address, $businessPhone, $website, $language]);
 
         $successMessage = "New record created successfully";
     } catch(PDOException $e) {
@@ -75,6 +76,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
             
             <label for="website">Business Website:</label>
             <input type="text" id="website" name="website" required>
+
+            <label for="language">Language:</label>
+            <select id="language" name="language" required>
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="Arabic">Arabic</option>
+            </select>
             
             <input type="submit" name="submit" value="Submit" class="btn btn-primary">
         </form>
