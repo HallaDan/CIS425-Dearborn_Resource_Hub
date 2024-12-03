@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS admin_approval (
     address VARCHAR(255) NOT NULL,
     businessPhone VARCHAR(50) NOT NULL,
     website VARCHAR(50) NOT NULL,
+    language ENUM('English', 'Spanish', 'Arabic') NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN key (businessID) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
