@@ -1,3 +1,4 @@
+/* General styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -6,26 +7,37 @@ body {
     color: #00274C;
 }
 
+/* Header styles */
 header {
-    display: flex;
-    justify-content: space-between; /* Align header text and hamburger on opposite sides */
-    align-items: center; /* Vertically align elements */
     background-color: #00274C;
     color: white;
-    padding: 15px 20px; /* Adjust padding for consistent height */
     border-radius: 15px; /* Rounded corners for the header */
-    margin: 20px auto; /* Center header and add spacing */
+    margin: 20px; /* Center header and add spacing */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 600px;
-    position: relative;
+    max-width: 500px; /* Adjusted max-width for wider layout */
+    display: flex;
+    justify-content: center; /* Center the content inside the header */
+    align-items: center; /* Vertically align the content */
+    height: 80px; /* Ensure the header has a consistent height */
 }
 
 /* Navigation container */
 .nav-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
+    justify-content: center; /* Center the text horizontally */
+    align-items: center; /* Center text vertically */
+    width: 100%; /* Make sure it spans the entire width */
+}
+
+/* Separate container for the hamburger menu */
+.hamburger-container {
+    display: flex;
+    justify-content: flex-end;
+    position: fixed; /* Makes sure the hamburger menu stays fixed on top */
+    top: 20px; /* Position it slightly down from the top of the page */
+    right: 20px; /* Position it to the right side of the screen */
+    z-index: 1000; /* Ensure it appears above other content */
+    height: 60px; /* Match the header height */
 }
 
 /* Hamburger dropdown menu */
@@ -36,8 +48,8 @@ header {
     background-color: white;
     color: black;
     position: absolute;
-    right: 20px;
-    top: 70px; /* Adjusted to drop below the header */
+    right: 0;
+    top: 70px; /* Adjust to drop below the header */
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -49,15 +61,13 @@ header {
 }
 
 /* Dropdown button styling */
-/* Style the hamburger menu */
 .dropdown {
     display: flex;
     align-items: center;
 }
 
-
 .dropdown-toggle {
-    background-color: #3949ab;
+    background-color: #00274C;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -66,15 +76,16 @@ header {
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s;
-    height: 50px; /* Match height of the header for consistency */
-    width: 50px; /* Create a square button */
+    height: 80px; /* Match height of the header for consistency */
+    width: 80px; /* Create a square button */
+    margin-top: 20px;
 }
 
 .dropdown-toggle:hover {
     background-color: #283593;
 }
 
-/* Language selector styling */
+/* Language selector styles */
 .language-selector {
     padding: 20px;
     background-color: white;
@@ -82,6 +93,23 @@ header {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     max-width: 165px;
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping of radio buttons and labels */
+    align-items: center; /* Align the items vertically in the center */
+    justify-content: space-between; /* Space out the elements */
+}
+
+.language-selector label {
+    margin-right: 10px; /* Add some space between the label and radio button */
+}
+
+.language-selector input[type="radio"] {
+    margin: 0 5px; /* Space between radio buttons */
+}
+
+/* Adjust the button to align with the radio buttons */
+.language-selector button {
+    margin-left: 10px; /* Add some space to the left of the button */
 }
 
 .content {
@@ -139,35 +167,49 @@ button:hover {
 }
 
 /* Language selector section with image */
+/* Language selector section with images */
 .language-selector-container {
     display: flex;
-    justify-content: space-between; /* Pushes the image to the right */
-    align-items: flex-start; /* Aligns the top edges of the content */
-    background-color: white;
+    justify-content: space-between; /* Space between the language selector and images */
+    align-items: flex-start; /* Align the content at the top */
+    background-color: #FFD700;
     margin: 20px;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    position: relative; /* Position the image correctly */
     gap: 20px; /* Adds space between elements */
 }
 
-/* Styling for the image */
+/* Container for both images */
+.images-container {
+    display: flex;
+    gap: 20px; /* Space between the images */
+    flex-grow: 1; /* Allow the container to take up the remaining space */
+}
+
+/* Make both images flexible and allow them to take up space */
 .language-selector-container img {
-    max-width: 100px; /* Adjust as needed */
-    max-height: 75px; /* Adjust as needed */
-    width: auto;
+    flex-grow: 1; /* Allow the images to grow and fill available space */
+    max-width: 50%; /* Limit the image size */
     height: auto;
-    margin-left: 20px; /* Adds space between the image and language selector */
-    flex-shrink: 0; /* Prevent the image from shrinking */
+    object-fit: cover; /* Maintain aspect ratio while covering the container */
+    border-radius: 15px;
+}
+
+/* Specific adjustments for Dearborn Logo */
+.images-container img:first-child {
+    max-width: 30%; /* Limit Dearborn logo size */
+    object-fit: contain; /* Ensure the logo maintains its aspect ratio */
 }
 
 /* Welcome text box */
 .welcome-box {
-    background-color: #1a237e;
+    background-color: #00274C;
     color: white;
     padding: 20px;
     border-radius: 15px;
     margin: 20px;
+    margin-top: 20px; /* Reduce the gap between the image and the welcome box */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-size: 16px;
     line-height: 1.6;
@@ -190,4 +232,11 @@ button:hover {
 .welcome-box ul li::before {
     content: "-";
     margin-right: 10px;
+}   
+
+.community-image {
+    max-height: 10px; /* Adjust the height of the image */
+    width: auto; /* Maintain aspect ratio */
+    margin-left: 50px; /* Add space between the language selector and image */
+    border-radius: 15px;
 }
