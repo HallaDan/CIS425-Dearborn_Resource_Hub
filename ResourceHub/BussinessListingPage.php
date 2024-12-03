@@ -12,17 +12,19 @@ if (isset($_GET['lang'])) {
 //generic translations
 $translations = [
     'en' => [
-        
+        'home_page' => 'Home Page',
         'business_listings' => 'Find Local Experts',
         'contribute' => 'Contribute',
         'sign_out' => 'Sign Out',
     ],
     'ar' => [
+        'home_page' => 'الصفحة الرئيسية',
         'business_listings' => 'ابحث عن خبراء محليين',
         'contribute' => 'أضف القوائم',
         'sign_out' => 'تسجيل الخروج',
     ],
     'es' => [
+        'home_page' => 'Página de Inicio',
         'business_listings' => 'Encuentra expertos locales',
         'contribute' => 'Contribuir listados',
         'sign_out' => 'Cerrar sesión',
@@ -40,7 +42,6 @@ $table_mapping = [
 
 $attribute_mapping = [
     'en' => [
-        'businessID' => 'enBusinessID',
         'businessName' => 'enBusinessName',
         'businessCategory' => 'enBusinessCategory',
         'address' => 'enAddress',
@@ -48,7 +49,6 @@ $attribute_mapping = [
         'website' => 'enWebsite',
     ],
     'ar' => [
-        'businessID' => 'arBusinessID',
         'businessName' => 'arBusinessName',
         'businessCategory' => 'arBusinessCategory',
         'address' => 'arAddress',
@@ -56,7 +56,6 @@ $attribute_mapping = [
         'website' => 'arWebsite',
     ],
     'es' => [
-        'businessID' => 'esBusinessID',
         'businessName' => 'esBusinessName',
         'businessCategory' => 'esBusinessCategory',
         'address' => 'esAddress',
@@ -68,9 +67,28 @@ $attribute_mapping = [
 $selected_table = $table_mapping[$_SESSION['lang']];
 $attributes = $attribute_mapping[$_SESSION['lang']];
 
-// Fetch data from the selected table
+// Pagination settings
+$rows_per_page = 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $rows_per_page;
+
+// Fetch the total number of rows
 try {
-    $stmt = $conn->prepare("SELECT * FROM {$selected_table}");
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM {$selected_table}");
+    $stmt->execute();
+    $total_rows = $stmt->fetchColumn();
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+// Calculate total number of pages
+$total_pages = ceil($total_rows / $rows_per_page);
+
+// Fetch the rows for the current page
+try {
+    $stmt = $conn->prepare("SELECT * FROM {$selected_table} LIMIT :limit OFFSET :offset");
+    $stmt->bindParam(':limit', $rows_per_page, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     $businesses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -121,15 +139,19 @@ try {
             <div class="nav-container">
                 <h1>Multilingual Resource Hub</h1>
             </div>
+        </header>
+
+        <div class="hamburger-container">
             <div class="dropdown">
                 <button class="dropdown-toggle">☰</button>
                 <ul class="hamburger-menu">
-                    <li><a href="BussinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
+                    <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
                     <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
                     <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
                 </ul>
             </div>
-        </header>
+        </div>
+
 
         <div class="container">
             <h2 style="text-align:center;"><?= $lang['business_listings'] ?></h2>
@@ -149,26 +171,22 @@ try {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Business Name</th>
                             <th>Category</th>
                             <th>Address</th>
                             <th>Phone</th>
                             <th>Website</th>
-                            <th>Language</th>
                             <th>Created At</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($businesses as $business): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($business[$attributes['businessID']]); ?></td>
                                 <td><?php echo htmlspecialchars($business[$attributes['businessName']]); ?></td>
                                 <td><?php echo htmlspecialchars($business[$attributes['businessCategory']]); ?></td>
                                 <td><?php echo htmlspecialchars($business[$attributes['address']]); ?></td>
                                 <td><?php echo htmlspecialchars($business[$attributes['businessPhone']]); ?></td>
                                 <td><a href="<?php echo htmlspecialchars($business[$attributes['website']]); ?>" target="_blank"><?php echo htmlspecialchars($business[$attributes['website']]); ?></a></td>
-                                <td><?php echo htmlspecialchars($_SESSION['lang']); ?></td>
                                 <td><?php echo htmlspecialchars($business['create_at']); ?></td>
                             </tr>
                         <?php endforeach; ?>
@@ -178,7 +196,13 @@ try {
                 <p>No businesses found.</p>
             <?php endif; ?>
         </div>
-        
+
+        <div class="pagination">
+            <?php for ($page = 1; $page <= $total_pages; $page++): ?>
+                <a href="?page=<?= $page ?>" class="<?= $page == $current_page ? 'active' : '' ?>"><?= $page ?></a>
+            <?php endfor; ?>
+        </div>
+
         <script src="assets/js/script.js"></script>
     </body>
 </html>
