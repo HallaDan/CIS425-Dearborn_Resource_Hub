@@ -141,33 +141,33 @@ button:hover {
 /* Language selector section with image */
 .language-selector-container {
     display: flex;
-    justify-content: space-between; /* Pushes the image to the right */
-    align-items: flex-start; /* Aligns the top edges of the content */
-    background-color: white;
+    justify-content: space-between; /* Space between the language selector and image */
+    align-items: flex-start; /* Align the content at the top */
+    background-color: #FFD700;
     margin: 20px;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    position: relative; /* Position the image correctly */
     gap: 20px; /* Adds space between elements */
 }
 
-/* Styling for the image */
+/* Make the image flexible and allow it to take up space */
 .language-selector-container img {
-    max-width: 100px; /* Adjust as needed */
-    max-height: 75px; /* Adjust as needed */
-    width: auto;
+    flex-grow: 1; /* Allow the image to grow and fill available space */
+    max-width: 50%; /* Limit the image size */
     height: auto;
-    margin-left: 20px; /* Adds space between the image and language selector */
-    flex-shrink: 0; /* Prevent the image from shrinking */
+    object-fit: cover; /* Maintain aspect ratio while covering the container */
+    border-radius: 15px;
 }
 
 /* Welcome text box */
 .welcome-box {
-    background-color: #1a237e;
+    background-color: #00274C;
     color: white;
     padding: 20px;
     border-radius: 15px;
     margin: 20px;
+    margin-top: 20px; /* Reduce the gap between the image and the welcome box */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-size: 16px;
     line-height: 1.6;
@@ -190,4 +190,11 @@ button:hover {
 .welcome-box ul li::before {
     content: "-";
     margin-right: 10px;
+}   
+
+.community-image {
+    max-height: 10px; /* Adjust the height of the image */
+    width: auto; /* Maintain aspect ratio */
+    margin-left: 50px; /* Add space between the language selector and image */
+    border-radius: 15px;
 }
