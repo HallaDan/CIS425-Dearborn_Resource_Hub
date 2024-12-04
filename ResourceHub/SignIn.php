@@ -20,9 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
-        header("Location: HomePage.php");
-    } else {
-        $message = "Invalid username or password.";
+        $_SESSION['role'] = $user['role'];
+    
+        // Redirect based on user role
+        if ($_SESSION['role'] === 'admin') {
+            header("Location: AdminPanel.php");
+        } else {
+            header("Location: HomePage.php");
+        }
+        exit();
     }
 }
 ?>
