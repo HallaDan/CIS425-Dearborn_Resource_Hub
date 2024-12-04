@@ -19,12 +19,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $website = $_POST['website'];
     $language = $_POST['language'];
 
-    if (!isset($_SESSION['user_id'])){
-        die('User is not logged in. Please log in to submit a business.');
+    //Validate Form Data
+    if(empty($businessName) || empty($businessCategory) || empty($address) || empty($businessPhone) || empty($website) || empty($language)){
+        die('Error: All fields are required.');
     }
-    
+
     // Fetch the currently signed-in user's ID
     $businessID = $_SESSION['user_id'];
+
+    //Verify the user exists in the database to prevent foreign key errors
+    $stmt = $conn->prepare("SELECT id FROM users WHERE id = ?");
+    $stmt->execute([$businessID]);
+    if($stmt->rowCount() == 0){
+        die('Please Sign in to submit business form');
+    }
     
     try {
         // Prepare and bind
