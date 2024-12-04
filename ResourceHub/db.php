@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "resource_hub_db";
 $username = "root"; // change to your MySQL username
-$password = ""; // change to your MySQL password
+$password = "root"; // change to your MySQL password
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
