@@ -18,6 +18,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $businessPhone = $_POST['businessPhone'];
     $website = $_POST['website'];
     $language = $_POST['language'];
+
+    if (!isset($_SESSION['user_id'])){
+        die('User is not logged in. Please log in to submit a business.');
+    }
     
     // Fetch the currently signed-in user's ID
     $businessID = $_SESSION['user_id'];
@@ -29,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         // Execute the statement with the data
         $stmt->execute([$businessID, $businessName, $businessCategory, $address, $businessPhone, $website, $language]);
 
-        $successMessage = "New record created successfully";
+        $successMessage = "Your business has been submitted for admin approval";
     } catch(PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
