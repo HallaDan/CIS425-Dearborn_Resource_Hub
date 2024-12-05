@@ -45,6 +45,92 @@ try {
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
+
+$table_mapping = [
+    'en' => 'business_en',
+    'ar' => 'business_ar',
+    'es' => 'business_es',
+];
+
+$attribute_mapping = [
+    'en' => [
+        'businessID' => 'enBusinessID',
+        'businessName' => 'enBusinessName',
+        'businessCategory' => 'enBusinessCategory',
+        'address' => 'enAddress',
+        'businessPhone' => 'enBusinessPhone',
+        'website' => 'enWebsite',
+    ],
+    'ar' => [
+        'businessID' => 'arBusinessID',
+        'businessName' => 'arBusinessName',
+        'businessCategory' => 'arBusinessCategory',
+        'address' => 'arAddress',
+        'businessPhone' => 'arBusinessPhone',
+        'website' => 'arWebsite',
+    ],
+    'es' => [
+        'businessID' => 'esBusinessID',
+        'businessName' => 'esBusinessName',
+        'businessCategory' => 'esBusinessCategory',
+        'address' => 'esAddress',
+        'businessPhone' => 'esBusinessPhone',
+        'website' => 'esWebsite',
+    ],
+];
+
+$attributes = $attribute_mapping[$_SESSION['lang']];
+
+
+$selected_table = $table_mapping[$_SESSION['lang']];
+// Initialize selected table
+if (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'en'; // default language (for now?)
+}
+
+// Handle form submission to move selected businesses
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['selected_business']) && isset($_POST['lang'])) {
+    $selected_business_ids = $_POST['selected_business'];
+    $selected_lang = $_POST['lang'];
+    $selected_table = $table_mapping[$selected_lang];
+    $attributes = $attribute_mapping[$selected_lang];
+
+    // Move selected businesses to the appropriate table
+    foreach ($selected_business_ids as $business_id) {
+        try {
+            // Fetch the business details to insert into the new table
+            $stmt = $conn->prepare("SELECT * FROM admin_approval WHERE id = :id");
+            $stmt->execute([':id' => $business_id]);
+            $business = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($business) {
+                // Map the attributes to the selected table
+                $mapped_business = [];
+                foreach ($attributes as $admin_attr => $lang_attr) {
+                    $mapped_business[$lang_attr] = $business[$admin_attr];
+                }
+
+                // Insert into the selected table
+                $fields = implode(", ", array_keys($mapped_business));
+                $placeholders = ":" . implode(", :", array_keys($mapped_business));
+                
+                $stmt_insert = $conn->prepare("INSERT INTO {$selected_table} ($fields) VALUES ($placeholders)");
+                $stmt_insert->execute($mapped_business);
+
+                // Delete the business from the admin_approval table
+                $stmt_delete = $conn->prepare("DELETE FROM admin_approval WHERE id = :id");
+                $stmt_delete->execute([':id' => $business_id]);
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    // Redirect to the same page to reflect changes
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -82,7 +168,23 @@ try {
             margin: auto;
             border-collapse: collapse;
         }
-      
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        .pagination a.active {
+            background-color: #333;
+            color: white;
+            border: 1px solid #333;
+        }
     </style>
     </head>
     <body>
@@ -103,40 +205,61 @@ try {
             </div>
         </div>
 
+        <div class="container">
+        <h2>Admin Approval</h2>
+        <div class="language-selector">
+            <form method="POST" action="">
+                <label>Select Table:</label><br>
+                <input type="radio" name="lang" value="en" <?= $_SESSION['lang'] === 'en' ? 'checked' : '' ?>> English<br>
+                <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
+                <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
+                <button type="submit">Move Selected</button>
+        </div>
+    </div>
+
+    <div class="container">
         <div class="table-container">
             <?php if (count($businesses) > 0): ?>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Business ID</th>
-                            <th>Business Name</th>
-                            <th>Category</th>
-                            <th>Address</th>
-                            <th>Phone</th>
-                            <th>Website</th>
-                            <th>Language</th>
-                            <th>Created At</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($businesses as $business): ?>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td><?php echo htmlspecialchars($business['businessID']); ?></td>
-                                <td><?php echo htmlspecialchars($business['businessName']); ?></td>
-                                <td><?php echo htmlspecialchars($business['businessCategory']); ?></td>
-                                <td><?php echo htmlspecialchars($business['address']); ?></td>
-                                <td><?php echo htmlspecialchars($business['businessPhone']); ?></td>
-                                <td><a href="<?php echo htmlspecialchars($business['website']); ?>" target="_blank"><?php echo htmlspecialchars($business['website']); ?></a></td>
-                                <td><?php echo htmlspecialchars($business['language']); ?></td>
-                                <td><?php echo htmlspecialchars($business['create_at']); ?></td>
+                                <th>Select</th>
+                                <th>Business ID</th>
+                                <th>Business Name</th>
+                                <th>Category</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Website</th>
+                                <th>Language</th>
+                                <th>Created At</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($businesses as $business): ?>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="selected_business[]" value="<?php echo htmlspecialchars($business['id']); ?>">
+                                    </td>
+                                    <td><?php echo htmlspecialchars($business['businessID']); ?></td>
+                                    <td><?php echo htmlspecialchars($business['businessName']); ?></td>
+                                    <td><?php echo htmlspecialchars($business['businessCategory']); ?></td>
+                                    <td><?php echo htmlspecialchars($business['address']); ?></td>
+                                    <td><?php echo htmlspecialchars($business['businessPhone']); ?></td>
+                                    <td><a href="<?php echo htmlspecialchars($business['website']); ?>" target="_blank"><?php echo htmlspecialchars($business['website']); ?></a></td>
+                                    <td><?php echo htmlspecialchars($business['language']); ?></td>
+                                    <td><?php echo htmlspecialchars($business['create_at']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php else: ?>
                 <p>No businesses found.</p>
             <?php endif; ?>
         </div>
+    </div>
+    </form>
 
         <div class="pagination">
             <?php for ($page = 1; $page <= $total_pages; $page++): ?>
