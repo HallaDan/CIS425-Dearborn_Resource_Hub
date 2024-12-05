@@ -18,6 +18,13 @@ $nav = [
     'sign_out' => 'Sign Out',
 ];
 
+//language switch
+if (isset($_GET['lang'])) {
+    $_SESSION['lang'] = $_GET['lang'];
+} elseif (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'en'; //default language (for now?)
+}
+
 // Pagination settings
 $rows_per_page = 10;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
