@@ -27,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             
 
-            $sql = "INSERT INTO users ( email, password ) VALUES ( :email, :password )";
+            $sql = "INSERT INTO users ( email, password, role ) VALUES ( :email, :password, :role )";
             $stmt = $conn->prepare($sql);
             
-            if ($stmt->execute([ ':email' => $email, ':password' => $hashedPassword ])) {
+            if ($stmt->execute([ ':email' => $email, ':password' => $hashedPassword, ':role' => 'user' ])) {
                 $message = "Successfully registered!";
                 header("Location: SignIn.php");
                 exit();
