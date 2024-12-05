@@ -7,7 +7,14 @@ if (isset($_GET['lang'])) {
     $_SESSION['lang'] = $_GET['lang'];
 } elseif (!isset($_SESSION['lang'])) {
     $_SESSION['lang'] = 'en'; // default language (for now?)
-}
+}           
+
+$sql = "SELECT * FROM users WHERE id = :id";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':id' => $_SESSION['user_id']]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$is_admin = ($user['role'] === 'admin');
 
 //generic translations
 $translations = [
@@ -162,7 +169,12 @@ try {
                 <button class="dropdown-toggle">☰</button>
                 <ul class="hamburger-menu">
                     <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
-                    <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
+                    <?php if (!$is_admin): ?>
+                        <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
+                    <?php endif; ?>
+                    <?php if ($is_admin): ?>
+                        <li><a href="AdminPanel.php">Admin Panel</a></li>
+                    <?php endif; ?>
                     <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
                 </ul>
             </div>
