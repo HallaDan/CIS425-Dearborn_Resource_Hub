@@ -2,9 +2,6 @@
 session_start();
 require 'db.php';
 
-require 'vendor/autoload.php';
-use \Mailjet\Resources;
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: SignIn.php");
     exit();
@@ -98,112 +95,47 @@ if (!isset($_SESSION['lang'])) {
     $_SESSION['lang'] = 'en'; // default language (for now?)
 }
 
-// Handle form submission to move selected businesses or deny
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['selected_business']) && isset($_POST['lang']) && isset($_POST['move_selected'])) {
-        // "Move Selected" button logic
-        $selected_business_ids = $_POST['selected_business'];
-        $selected_lang = $_POST['lang'];
-        $selected_table = $table_mapping[$selected_lang];
-        $attributes = $attribute_mapping[$selected_lang];
+// Handle form submission to move selected businesses
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['selected_business']) && isset($_POST['lang'])) {
+    $selected_business_ids = $_POST['selected_business'];
+    $selected_lang = $_POST['lang'];
+    $selected_table = $table_mapping[$selected_lang];
+    $attributes = $attribute_mapping[$selected_lang];
 
-        // Move selected businesses to the appropriate table
-        foreach ($selected_business_ids as $business_id) {
-            try {
-                // Fetch the business details to insert into the new table
-                $stmt = $conn->prepare("SELECT * FROM admin_approval WHERE id = :id");
-                $stmt->execute([':id' => $business_id]);
-                $business = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Move selected businesses to the appropriate table
+    foreach ($selected_business_ids as $business_id) {
+        try {
+            // Fetch the business details to insert into the new table
+            $stmt = $conn->prepare("SELECT * FROM admin_approval WHERE id = :id");
+            $stmt->execute([':id' => $business_id]);
+            $business = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                if ($business) {
-                    // Map the attributes to the selected table
-                    $mapped_business = [];
-                    foreach ($attributes as $admin_attr => $lang_attr) {
-                        $mapped_business[$lang_attr] = $business[$admin_attr];
-                    }
-
-                    // Insert into the selected table
-                    $fields = implode(", ", array_keys($mapped_business));
-                    $placeholders = ":" . implode(", :", array_keys($mapped_business));
-
-                    $stmt_insert = $conn->prepare("INSERT INTO {$selected_table} ($fields) VALUES ($placeholders)");
-                    $stmt_insert->execute($mapped_business);
-
-                    // Delete the business from the admin_approval table
-                    $stmt_delete = $conn->prepare("DELETE FROM admin_approval WHERE id = :id");
-                    $stmt_delete->execute([':id' => $business_id]);
+            if ($business) {
+                // Map the attributes to the selected table
+                $mapped_business = [];
+                foreach ($attributes as $admin_attr => $lang_attr) {
+                    $mapped_business[$lang_attr] = $business[$admin_attr];
                 }
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
+
+                // Insert into the selected table
+                $fields = implode(", ", array_keys($mapped_business));
+                $placeholders = ":" . implode(", :", array_keys($mapped_business));
+                
+                $stmt_insert = $conn->prepare("INSERT INTO {$selected_table} ($fields) VALUES ($placeholders)");
+                $stmt_insert->execute($mapped_business);
+
+                // Delete the business from the admin_approval table
+                $stmt_delete = $conn->prepare("DELETE FROM admin_approval WHERE id = :id");
+                $stmt_delete->execute([':id' => $business_id]);
             }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
         }
-
-        // Redirect to the same page to reflect changes
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-
-    } elseif (isset($_POST['selected_business']) && isset($_POST['deny'])) {
-        // "Deny" button logic
-        $selected_business_ids = $_POST['selected_business'];
-
-        foreach ($selected_business_ids as $business_id) {
-            try {
-                // retreive the business details for the email
-                $stmt = $conn->prepare("SELECT * FROM admin_approval WHERE id = :id");
-                $stmt->execute([':id' => $business_id]);
-                $business = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                if ($business) {
-                    // get user email from users table
-                    $stmt_user = $conn->prepare("SELECT email FROM users WHERE id = :id");
-                    $stmt_user->execute([':id' => $business['businessID']]);
-                    $user = $stmt_user->fetch(PDO::FETCH_ASSOC);
-
-                    if ($user) {
-
-                        $apiKey = 'ae1d36c51acc064faa9cae4cbeaff4ee';
-                        $apiSecret = 'b251df238e26f20ee7b293c4f352dda3';
-
-                        $mj = new \Mailjet\Client($apiKey, $apiSecret, true, ['version' => 'v3.1']);
-                        $emailData = [
-                            'Messages' => [
-                                [
-                                    'From' => [
-                                        'Email' => "dbresourcehub@gmail.com",
-                                        'Name' => "Dearborn Resource Hub"
-                                    ],
-                                    'To' => [
-                                        [
-                                            'Email' => $user['email']
-                                        ]
-                                    ],
-                                    'Subject' => "Application Denied",
-                                    'TextPart' => "Unfortunately, your application has been denied.",
-                                    'HTMLPart' => "<h3>Unfortunately, your application has been denied.</h3>"
-                                ]
-                            ]
-                        ];
-
-                        $response = $mj->post(Resources::$Email, ['body' => $emailData]);
-
-                        if (!$response->success()) {
-                            echo "Failed to send email. Error: " . $response->getData()['ErrorMessage'];
-                        }
-                    }
-
-                    // delete the business entry from the admin_approval table
-                    $stmt_delete = $conn->prepare("DELETE FROM admin_approval WHERE id = :id");
-                    $stmt_delete->execute([':id' => $business_id]);
-                }
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
-            }
-        }
-
-        // Redirect to the same page to reflect changes
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
     }
+
+    // Redirect to the same page to reflect changes
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 
 ?>
@@ -288,8 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="radio" name="lang" value="en" <?= $_SESSION['lang'] === 'en' ? 'checked' : '' ?>> English<br>
                 <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
                 <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
-                <button type="submit" name="move_selected">Move Selected</button>
-                <button type="submit" name="deny">Deny</button>
+                <button type="submit">Move Selected</button>
         </div>
     </div>
 
