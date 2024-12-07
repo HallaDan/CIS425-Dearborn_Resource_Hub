@@ -3,7 +3,16 @@ session_start();
 require 'db.php';
 
 require 'vendor/autoload.php';
+use Dotenv\Dotenv;
 use \Mailjet\Resources;
+
+// Initialize Dotenv
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// Fetch API keys from environment variables
+$apiKey = $_ENV['API_GENERAL_KEY'];
+$apiSecret = $_ENV['API_SECRET_KEY'];
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: SignIn.php");
@@ -160,9 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $user = $stmt_user->fetch(PDO::FETCH_ASSOC);
 
                     if ($user) {
-
-                        $apiKey = 'ae1d36c51acc064faa9cae4cbeaff4ee';
-                        $apiSecret = 'b251df238e26f20ee7b293c4f352dda3';
 
                         $mj = new \Mailjet\Client($apiKey, $apiSecret, true, ['version' => 'v3.1']);
                         $emailData = [
