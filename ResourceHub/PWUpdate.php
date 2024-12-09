@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">Update</button>
         </form>
         <div class="footer">
-            <a href="HomePage.php">Back to Home</a>
+            <a href="SignIn.php">Back to Sign In</a>
         </div>
     </div>
 </body>
