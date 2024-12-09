@@ -17,6 +17,15 @@ if (isset($_GET['lang'])) {
     $_SESSION['lang'] = 'en'; // default language (for now?)
 }
 
+
+$sql = "SELECT * FROM users WHERE id = :id";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':id' => $_SESSION['user_id']]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$is_admin = ($user['role'] === 'admin');
+
+
 //generic translations
 $translations = [
     'en' => [
@@ -175,15 +184,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
             </div>
         </header>
 
-        <div class="hamburger-container">
-            <div class="dropdown">
-                <button class="dropdown-toggle">☰</button>
-                <ul class="hamburger-menu">
-                    <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
-                    <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
-                    <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
-                </ul>
-            </div>
+    <div class="hamburger-container">
+        <div class="dropdown">
+            <button class="dropdown-toggle">☰</button>
+            <ul class="hamburger-menu">
+                <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
+                <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
+                <?php if ($is_admin): ?>
+                    <li><a href="AdminPanel.php">Admin Panel</a></li>
+                <?php endif; ?>
+                <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
+            </ul>
         </div>
 
         <!-- Language Selector Form -->
