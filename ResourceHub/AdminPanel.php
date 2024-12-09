@@ -28,6 +28,7 @@ $nav = [
     'home_page' => 'Home Page',
     'business_listings' => 'Find Local Experts',
     'sign_out' => 'Sign Out',
+    'contribute' => 'Contribute'
 ];
 
 //language switch
@@ -228,14 +229,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         table {
             margin: auto;
             border-collapse: collapse;
+            border-radius: 10px; /* Apply border-radius to the table */
+            overflow: hidden; /* Ensure cells respect the border radius */
         }
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
+            background-color: #f1c40f; /* Dark blue background */
+            color: #3a3a3a; /* White text color */
         }
         th {
-            background-color: #f4f4f4;
+            color: #ffffff; /* White text color */
+            background-color: #002244;
         }
         .table-responsive {
             overflow-x: auto;
@@ -281,23 +287,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <ul class="hamburger-menu">
                     <li><a href="HomePage.php"><?= $nav['home_page'] ?></a></li>
                     <li><a href="BusinessListingPage.php"><?= $nav['business_listings'] ?></a></li>
+                    <li><a href="SubmissionPage.php"><?= $nav['contribute'] ?></a></li>
                     <li><a href="SignOut.php"><?= $nav['sign_out'] ?></a></li>
                 </ul>
             </div>
         </div>
 
         <div class="container">
-        <h2>Admin Approval</h2>
-        <div class="language-selector">
-            <form method="POST" action="">
-                <label>Select Table:</label><br>
-                <input type="radio" name="lang" value="en" <?= $_SESSION['lang'] === 'en' ? 'checked' : '' ?>> English<br>
-                <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
-                <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
-                <button type="submit" name="move_selected">Move Selected</button>
-                <button type="submit" name="deny">Deny</button>
+            <h2 style="text-align:center;">Admin Approval</h2>
+            <div class="language-selector">
+                <form method="POST" action="">
+                    <label>Select Table:</label><br>
+                    <input type="radio" name="lang" value="en" <?= $_SESSION['lang'] === 'en' ? 'checked' : '' ?>> English<br>
+                    <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
+                    <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
+                    <button type="submit" name="move_selected">Move Selected</button>
+                    <button type="submit" name="deny">Deny</button>
+            </div>
         </div>
-    </div>
 
     <div class="container">
         <div class="table-container">
@@ -337,7 +344,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </table>
                 </div>
             <?php else: ?>
-                <p>No businesses found.</p>
+                <p style="text-align:center;">No businesses found.</p>
             <?php endif; ?>
         </div>
     </div>
