@@ -1,57 +1,156 @@
 <?php
 session_start();
-require 'db.php';
+require 'db.php'; // Database connection
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: SignIn.php");
-    exit();
-}
+$message = "";
 
-$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $code = $_POST['code'] ?? '';
+    $new_password = $_POST['new_password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
-// Fetch user details
-$sql = "SELECT * FROM users WHERE id = :id";
-$stmt = $conn->prepare($sql);
-$stmt->execute([':id' => $_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Validate password
+    if (strlen($new_password) < 10 || !preg_match("/[A-Z]/", $new_password) || !preg_match("/[a-z]/", $new_password) || !preg_match("/[0-9]/", $new_password)) {
+        $message = "Password must be at least 10 characters long and include uppercase, lowercase letters, and a number.";
+    } elseif ($new_password !== $confirm_password) {
+        $message = "Passwords do not match.";
+    } else {
+        // Check if the code exists in the reset_code table
+        $stmt = $conn->prepare("SELECT user_id FROM reset_code WHERE code = :code LIMIT 1");
+        $stmt->execute(['code' => $code]);
+        $resetEntry = $stmt->fetch();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $newPassword = $_POST['new_password'];
-    $confirmPassword = $_POST['confirm_password'];
+        if ($resetEntry) {
+            $userId = $resetEntry['user_id'];
 
-    // Update password only if filled and matches validation
-    if ($newPassword) {
-        if ($newPassword !== $confirmPassword) {
-            $message = "Passwords do not match.";
-        } elseif (strlen($newPassword) < 10 || !preg_match("/[A-Z]/", $newPassword) || !preg_match("/[a-z]/", $newPassword) || !preg_match("/[0-9]/", $newPassword)) {
-            $message = "Password must be at least 10 characters long and include uppercase, lowercase letters, and a number.";
+            // Hash the new password
+            $hashedPassword = password_hash($new_password, PASSWORD_BCRYPT);
+
+            // Update the user's password
+            $updateStmt = $conn->prepare("UPDATE users SET password = :password WHERE id = :id");
+            $updateStmt->execute(['password' => $hashedPassword, 'id' => $userId]);
+
+            // Delete the reset code
+            $deleteStmt = $conn->prepare("DELETE FROM reset_code WHERE user_id = :user_id");
+            $deleteStmt->execute(['user_id' => $userId]);
+
+            // Redirect to SignIn.php
+            header("Location: SignOut.php");
+            exit;
         } else {
-            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
-            $stmt = $conn->prepare("UPDATE users SET password = :password WHERE id = :id");
-            $stmt->execute([':password' => $hashedPassword, ':id' => $_SESSION['user_id']]);
-            $message = "Password updated successfully.";
+            $message = "Invalid reset code.";
         }
     }
-    
 }
-
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Password</title>
+    <style>
+        /* body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #3D648A;
+        }
+
+        /* Container for form */
+        .login-container {
+            background-color: #00274C;
+            border-radius: 10px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: white;
+        }
+
+        .login-container h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .login-container label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        /* Button styling */
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FFCB05;
+            border: none;
+            color: #00274C;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .login-container button:hover {
+            background-color: #FFB600;
+        }
+
+        /* Error message */
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        /* Footer link */
+        .footer a {
+            color: #FFCB05;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Update Password</h1>
-    <p><?php echo $message; ?></p>
-    <form method="POST" enctype="multipart/form-data">
-        <label>New Password:</label>
-        <input type="password" name="new_password">
-        <label>Confirm New Password:</label>
-        <input type="password" name="confirm_password">
-        <button type="submit">Update</button>
-    </form>
-    <a href="HomePage.php">Back to Home</a>
+    <div class="login-container">
+        <h1>Update Password</h1>
+        <?php if (!empty($message)): ?>
+            <p class="error"><?php echo htmlspecialchars($message); ?></p>
+        <?php endif; ?>
+        <form method="POST">
+            <label for="code">Code:</label>
+            <input type="number" name="code" id="code" required>
+
+            <label for="new_password">New Password:</label>
+            <input type="password" name="new_password" id="new_password" required>
+
+            <label for="confirm_password">Confirm New Password:</label>
+            <input type="password" name="confirm_password" id="confirm_password" required>
+
+            <button type="submit">Update</button>
+        </form>
+        <div class="footer">
+            <a href="HomePage.php">Back to Home</a>
+        </div>
+    </div>
 </body>
 </html>
