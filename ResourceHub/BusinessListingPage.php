@@ -91,9 +91,30 @@ try {
 // Calculate total number of pages
 $total_pages = ceil($total_rows / $rows_per_page);
 
-// Fetch the rows for the current page
+// Filter by category
+$search_category = isset($_GET['category']) ? $_GET['category'] : '';
+
+// Fetch the total number of rows with optional search filter
 try {
-    $stmt = $conn->prepare("SELECT * FROM {$selected_table} LIMIT :limit OFFSET :offset");
+    $where_clause = '';
+    $params = [];
+    if ($search_category) {
+        $where_clause = "WHERE {$attributes['businessCategory']} LIKE :category";
+        $params = [':category' => "%$search_category%"];
+    }
+
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM {$selected_table} $where_clause");
+    $stmt->execute($params);
+    $total_rows = $stmt->fetchColumn();
+    
+    // Calculate total number of pages
+    $total_pages = ceil($total_rows / $rows_per_page);
+
+    // Fetch the rows for the current page with optional search filter
+    $stmt = $conn->prepare("SELECT * FROM {$selected_table} $where_clause LIMIT :limit OFFSET :offset");
+    foreach ($params as $key => &$val) {
+        $stmt->bindParam($key, $val, PDO::PARAM_STR);
+    }
     $stmt->bindParam(':limit', $rows_per_page, PDO::PARAM_INT);
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
@@ -117,14 +138,19 @@ try {
         table {
             margin: auto;
             border-collapse: collapse;
+            border-radius: 10px; /* Apply border-radius to the table */
+            overflow: hidden; /* Ensure cells respect the border radius */
         }
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
+            background-color: #f1c40f; /* Dark blue background */
+            color: #3a3a3a; /* White text color */
         }
         th {
-            background-color: #f4f4f4;
+            color: #ffffff; /* White text color */
+            background-color: #002244;
         }
         .table-responsive {
             overflow-x: auto;
@@ -155,6 +181,22 @@ try {
             color: white;
             border: 1px solid #333;
         }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px;
+        }
+        .search-form input[type="text"] {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            width: 300px;
+            font-size: 16px;
+        }
+        .search-form button {
+            padding: 10px 15px;
+        }
     </style>
     </head>
     <body>
@@ -179,9 +221,12 @@ try {
                 </ul>
             </div>
         </div>
+         
+        
 
+        
 
-        <div class="container">
+        <div class="main-container">
             <h2 style="text-align:center;"><?= $lang['business_listings'] ?></h2>
             <div class="language-selector">
                 <form method="GET" action="">
@@ -190,6 +235,12 @@ try {
                     <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
                     <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
                     <button type="submit">Apply</button>
+                </form>
+            </div>
+            <div class="search-form">
+                <form method="GET" action="">
+                    <input type="text" name="category" placeholder="Search by Category" value="<?= htmlspecialchars($search_category) ?>">
+                    <button type="submit">Search</button>
                 </form>
             </div>
         </div>
