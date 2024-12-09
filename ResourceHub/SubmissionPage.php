@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         // Execute the statement with the data
         $stmt->execute([$businessID, $businessName, $businessCategory, $address, $businessPhone, $website, $language]);
 
-        $successMessage = "Your business has been submitted for admin approval";
+        $successMessage = "Your business has been submitted for admin approval!";
     } catch(PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
@@ -175,6 +175,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         .language-selector {
             margin-right: 20px; /* Space between language selector and form */
         }
+        .alert {
+            width: 400px; /* Make the alert the same width as the form */
+            padding: 10px;
+            margin-bottom: 20px;
+            color: #ffffff; /* White text color */
+            background-color: #28a745; /* Green background */
+            border: 1px solid #28a745; /* Green border */
+            border-radius: 5px; /* Optional: Round the corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for better depth */
+            text-align: center; /* Center the text inside the alert */
+        }
     </style>
 </head>
     <body>
@@ -214,7 +225,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
             <div class="center-content">
             <h2 style="text-align:center;"><?= $lang['submit_business'] ?></h2>
                 <?php if ($successMessage): ?>
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert" role="alert">
                         <?php echo $successMessage; ?>
                     </div>
                 <?php endif; ?>
