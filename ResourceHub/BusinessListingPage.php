@@ -2,6 +2,22 @@
 session_start();
 require 'db.php'; // Include the database connection script
 
+$user = null; // Default value for user details
+$is_admin = false; // Default value for admin status
+
+// Check if the user is logged in
+if (isset($_SESSION['user_id'])) {
+    // get user details
+    $sql = "SELECT * FROM users WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':id' => $_SESSION['user_id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $is_admin = ($user['role'] === 'admin');
+    }
+}
+
 //language switch
 if (isset($_GET['lang'])) {
     $_SESSION['lang'] = $_GET['lang'];
@@ -9,12 +25,6 @@ if (isset($_GET['lang'])) {
     $_SESSION['lang'] = 'en'; // default language (for now?)
 }           
 
-$sql = "SELECT * FROM users WHERE id = :id";
-$stmt = $conn->prepare($sql);
-$stmt->execute([':id' => $_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$is_admin = ($user['role'] === 'admin');
 
 //generic translations
 $translations = [
@@ -205,23 +215,27 @@ try {
                 <h1>Multilingual Resource Hub</h1>
             </div>
         </header>
-
         <div class="hamburger-container">
             <div class="dropdown">
                 <button class="dropdown-toggle">☰</button>
                 <ul class="hamburger-menu">
-                    <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
-                    <?php if (!$is_admin): ?>
+                    <?php if (!isset($_SESSION['user_id'])): ?>
+                        <!-- User is not logged in -->
+                        <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
                         <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
+                        <li><a href="SignIn.php">Sign In</a></li>
+                    <?php else: ?>
+                        <!-- User is logged in -->
+                        <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
+                        <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
+                        <?php if ($is_admin): ?>
+                            <li><a href="AdminPanel.php">Admin Panel</a></li>
+                        <?php endif; ?>
+                        <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
                     <?php endif; ?>
-                    <?php if ($is_admin): ?>
-                        <li><a href="AdminPanel.php">Admin Panel</a></li>
-                    <?php endif; ?>
-                    <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
                 </ul>
             </div>
-        </div>
-         
+        </div> 
         
 
         

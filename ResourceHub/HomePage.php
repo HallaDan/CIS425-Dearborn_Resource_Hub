@@ -2,20 +2,21 @@
 session_start();
 require 'db.php';
 
-//redirect to SignIn.php if the user is not logged in
-//we dont need to keep this obviously, but just to test login/logout
-if (!isset($_SESSION['user_id'])) {
-    header("Location: SignIn.php");
-    exit();
+$user = null; // Default value for user details
+$is_admin = false; // Default value for admin status
+
+// Check if the user is logged in
+if (isset($_SESSION['user_id'])) {
+    // get user details
+    $sql = "SELECT * FROM users WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':id' => $_SESSION['user_id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $is_admin = ($user['role'] === 'admin');
+    }
 }
-
-// get user details
-$sql = "SELECT * FROM users WHERE id = :id";
-$stmt = $conn->prepare($sql);
-$stmt->execute([':id' => $_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$is_admin = ($user['role'] === 'admin');
 
 //language switch
 if (isset($_GET['lang'])) {
@@ -107,14 +108,20 @@ $lang = $translations[$_SESSION['lang']];
         <div class="dropdown">
             <button class="dropdown-toggle">☰</button>
             <ul class="hamburger-menu">
-                <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
-                <?php if (!$is_admin): ?>
+                <?php if (!isset($_SESSION['user_id'])): ?>
+                    <!-- User is not logged in -->
+                    <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
                     <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
+                    <li><a href="SignIn.php">Sign In</a></li>
+                <?php else: ?>
+                    <!-- User is logged in -->
+                    <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
+                    <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
+                    <?php if ($is_admin): ?>
+                        <li><a href="AdminPanel.php">Admin Panel</a></li>
+                    <?php endif; ?>
+                    <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
                 <?php endif; ?>
-                <?php if ($is_admin): ?>
-                    <li><a href="AdminPanel.php">Admin Panel</a></li>
-                <?php endif; ?>
-                <li><a href="SignOut.php"><?= $lang['sign_out'] ?></a></li>
             </ul>
         </div>
     </div>
