@@ -43,22 +43,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <h1>Sign Up</h1>
-    <p><?php echo $message; ?></p>
-    <form method="POST" enctype="multipart/form-data">
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <label>Password:</label>
-        <input type="password" name="password" required>
-        <label>Confirm Password:</label>
-        <input type="password" name="confirm_password" required>
-        <button type="submit">Register</button>
+<div class="signup-container">
+    <header class="signup-header">
+        <h1>Sign Up</h1>
+    </header>
+    <?php if (!empty($message)) : ?>
+        <p class="signup-message"><?php echo htmlspecialchars($message); ?></p>
+    <?php endif; ?>
+    <form method="POST" class="signup-form">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" name="confirm_password" id="confirm_password" required>
+        </div>
+        <button type="submit" class="btn-primary">Register</button>
     </form>
-    <p>Already registered? <a href="SignIn.php">Sign In Here</a>.</p>
+    <p class="signup-alt-options">
+        Already registered? <a href="SignIn.php">Sign In Here</a>.
+    </p>
+</div>
 </body>
 </html>
