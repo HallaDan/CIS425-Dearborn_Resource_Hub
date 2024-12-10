@@ -21,11 +21,9 @@ The website enables users to locate professionals based on language and professi
 
 #### Professional Profiles
 Professionals can log in to create profiles that include:
-- Name
-- Profile picture
-- Languages spoken
+- BusinessName
+- Languages spoken by business
 - Area of expertise
-- Years of experience
 - Contact details (phone number, email, business address)
 
 #### User Contributions
@@ -57,7 +55,7 @@ Three key pages are designed using Figma to reflect the color theme and user int
 - Welcome message
 - Brief platform description
 - Language selection option
-- Navigation tabs and search bar
+- Navigation tabs
 
 #### Business Listing Page
 - Directory of businesses and professionals
@@ -73,6 +71,7 @@ Three key pages are designed using Figma to reflect the color theme and user int
 ### Backend
 - **PHP**: Handles server-side logic, including user authentication, form submissions, and profile management.
 - **MySQL**: Manages data storage for user profiles, business listings, and contributions.
+- **MailJet**: Manages email sending for business denial emails from Admin, and forgot password verification codes
 
 ### Frontend
 - **HTML**, **CSS**, **JavaScript**: Used for building the front-end interface, enabling language-based navigation and profile submissions.
@@ -91,14 +90,21 @@ cd project-directory
 ### 2. Database Setup
 - Import the provided SQL files into MySQL.
 - Configure database credentials in the PHP configuration file.
-
-### 3. Start Local Server
-- Use Apache (or similar server) to host the PHP files.
   
-### 4. Access the Website
+### 3. Environment Variable Setup
+- Navigate to the root of the project `\Dearborn_Resource_Hub\ResourceHub\` and add a .env file
+- Add the line `API_GENERAL_KEY='<your_api_general_key>'` provided by MailJet API
+- Add the line `API_SECRET_KEY='<your_api_secret_key>'` provided by MailJet API
+
+### 4. Start Local Server
+- Use Apache (or similar server) to host the PHP files.
+- Use MySQL (or similar server) to host the Database files.
+  
+### 5. Access the Website
 - Navigate to `localhost/<project-folder>` to access the website locally.
+
 
 ## Future Improvements
 - **Built-in Translator**: A translator tool (e.g., pop-up support with ChatGPT) for enhanced multilingual support.
 - **Community Events Page**: An event listing page that allows users to post local events upon admin approval.
--  **Advanced Search Filters**: Filtering options by language, profession, and availability.
+- **Advanced Search Filters**: Filtering options by language, profession, and availability.
