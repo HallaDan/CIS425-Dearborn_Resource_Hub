@@ -33,18 +33,21 @@ $translations = [
         'business_listings' => 'Find Local Experts',
         'contribute' => 'Contribute',
         'sign_out' => 'Sign Out',
+        'sign_in' => 'Sign In'
     ],
     'ar' => [
         'home_page' => 'الصفحة الرئيسية',
         'business_listings' => 'ابحث عن خبراء محليين',
         'contribute' => 'أضف القوائم',
         'sign_out' => 'تسجيل الخروج',
+        'sign_in' => 'تسجيل الدخول'
     ],
     'es' => [
         'home_page' => 'Página de Inicio',
         'business_listings' => 'Encuentra expertos locales',
         'contribute' => 'Contribuir listados',
         'sign_out' => 'Cerrar sesión',
+        'sign_in' => 'Iniciar sesión'
     ],
 ];
 
@@ -223,7 +226,7 @@ try {
                         <!-- User is not logged in -->
                         <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
                         <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
-                        <li><a href="SignIn.php">Sign In</a></li>
+                        <li><a href="SignIn.php"><?= $lang['sign_in'] ?></a></li>
                     <?php else: ?>
                         <!-- User is logged in -->
                         <li><a href="HomePage.php"><?= $lang['home_page'] ?></a></li>
