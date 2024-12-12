@@ -17,6 +17,13 @@ $apiSecret = $_ENV['API_SECRET_KEY'];
 $message = "";
 $success = false; // Track success status
 
+//language switch
+if (isset($_GET['lang'])) {
+    $_SESSION['lang'] = $_GET['lang'];
+} elseif (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'en'; //default language (for now?)
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
 
@@ -67,7 +74,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Email not found. Please check and try again.";
     }
 }
+
+$translations = [
+    'en' => [
+        'update_pw' => 'Update Password',
+        'email' => 'Email',
+        'send_code' => 'Send Code',
+        'go_back' => 'Back to Sign In'                
+    ],
+    'ar' => [
+        'update_pw' => 'تحديث كلمة المرور',
+        'email' => 'البريد الإلكتروني',
+        'send_code' => 'إرسال الرمز',
+        'go_back' => 'العودة إلى تسجيل الدخول'
+    ],
+    'es' => [
+        'update_pw' => 'Actualizar contraseña',
+        'email' => 'Correo electrónico',
+        'send_code' => 'Enviar código',
+        'go_back' => 'Volver a iniciar sesión'   
+    ],
+];
+$lang = $translations[$_SESSION['lang']];
 ?>
+
 
 
 <!DOCTYPE html>
@@ -76,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Code</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
     <style>
         /* body */
         body {
@@ -156,6 +187,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 20px;
             text-decoration: underline;
         }
+        .center-content-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: left;
+            padding: 20px;
+        }
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left; /* Center-align text for child elements */
+        }
     </style>
     <script>
         // Redirect if success
@@ -168,18 +212,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 </head>
 <body>
-<div class="login-container">
-        <h1>Update Password</h1>
-        <?php if (!empty($message)): ?>
-            <p class="error"><?php echo htmlspecialchars($message); ?></p>
-        <?php endif; ?>
-        <form method="POST">
-            <label for="email">Email:</label>
-            <input name="email" id="email" required>
-            <button type="submit">Send Code</button>
-        </form>
-        <div class="footer">
-            <a href="SignIn.php">Back to Sign In</a>
+    <div class="center-content-container">
+        <div class="language-selector">
+            <form method="GET" action="">
+                <label>Select Your Language:</label><br>
+                <input type="radio" name="lang" value="en" <?= $_SESSION['lang'] === 'en' ? 'checked' : '' ?>> English<br>
+                <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
+                <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
+                <button type="submit">Apply</button>
+            </form>
+        </div>
+        <div class="center-content">
+            <div class="login-container">
+                <h1><?= $lang['update_pw'] ?></h1>
+                <?php if (!empty($message)): ?>
+                    <p class="error"><?php echo htmlspecialchars($message); ?></p>
+                <?php endif; ?>
+                <form method="POST">
+                    <label for="email"><?= $lang['email'] ?></label>
+                    <input name="email" id="email" required>
+                    <button type="submit"><?= $lang['send_code'] ?></button>
+                </form>
+                <div class="footer">
+                    <a href="SignIn.php"><?= $lang['go_back'] ?></a>
+                </div>
+            </div>
         </div>
     </div>
 </body>
