@@ -1,6 +1,6 @@
 <?php
 $host = "localhost";
-$dbname = "resource_hub_db";
+$dbname = "f24_group8_db";
 $username = "root"; // change to your MySQL username
 $password = ""; // change to your MySQL password
 
