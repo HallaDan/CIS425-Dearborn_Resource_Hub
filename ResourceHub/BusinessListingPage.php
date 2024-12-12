@@ -279,7 +279,11 @@ try {
                                 <td><?php echo htmlspecialchars($business[$attributes['businessCategory']]); ?></td>
                                 <td><?php echo htmlspecialchars($business[$attributes['address']]); ?></td>
                                 <td><?php echo htmlspecialchars($business[$attributes['businessPhone']]); ?></td>
-                                <td><a href="<?php echo htmlspecialchars($business[$attributes['website']]); ?>" target="_blank"><?php echo htmlspecialchars($business[$attributes['website']]); ?></a></td>
+                                <td>
+                                    <a href="<?php echo htmlspecialchars((strpos($business[$attributes['website']], 'http') === 0 ? '' : 'http://') . $business[$attributes['website']]); ?>" target="_blank">
+                                        <?php echo htmlspecialchars($business[$attributes['website']]); ?>
+                                    </a>
+                                </td>
                                 <td><?php echo htmlspecialchars($business['create_at']); ?></td>
                             </tr>
                         <?php endforeach; ?>

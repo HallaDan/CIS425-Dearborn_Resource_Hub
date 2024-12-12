@@ -335,7 +335,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <td><?php echo htmlspecialchars($business['businessCategory']); ?></td>
                                     <td><?php echo htmlspecialchars($business['address']); ?></td>
                                     <td><?php echo htmlspecialchars($business['businessPhone']); ?></td>
-                                    <td><a href="<?php echo htmlspecialchars($business['website']); ?>" target="_blank"><?php echo htmlspecialchars($business['website']); ?></a></td>
+                                    <td>
+                                        <a href="http<?php echo (strpos($business['website'], 'https://') === 0 ? '' : 's://') . htmlspecialchars($business['website']); ?>" target="_blank">
+                                            <?php echo htmlspecialchars($business['website']); ?>
+                                        </a>
+                                    </td>
                                     <td><?php echo htmlspecialchars($business['language']); ?></td>
                                     <td><?php echo htmlspecialchars($business['create_at']); ?></td>
                                 </tr>
