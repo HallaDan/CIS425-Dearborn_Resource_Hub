@@ -1,8 +1,8 @@
 -- Create the database
-CREATE DATABASE IF NOT EXISTS resource_hub_db;
+CREATE DATABASE IF NOT EXISTS f24_group8_db;
 
 -- Switch to the database
-USE resource_hub_db;
+USE f24_group8_db;
 
 -- Create the `items` table
 CREATE TABLE IF NOT EXISTS users (
