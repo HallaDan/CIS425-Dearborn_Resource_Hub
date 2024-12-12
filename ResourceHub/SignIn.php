@@ -127,7 +127,7 @@ $lang = $translations[$_SESSION['lang']];
                     <button type="submit" class="btn-primary"><?= $lang['log_in'] ?></button>
                 </form>
                 <p class="signin-alt-options">
-                    <?= $lang['no_acct'] ?> <a href="SignUp.php"><?= $lang['sign_up_here'] ?></a>.
+                    <?= $lang['no_acct'] ?> <a href="SignUp.php"><?= $lang['sign_up_here'] ?></a>
                     <br>
                     <a href="PWResetCode.php"><?= $lang['forgot_PW'] ?></a>
                 </p>
