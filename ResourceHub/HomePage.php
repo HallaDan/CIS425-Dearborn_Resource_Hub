@@ -33,6 +33,7 @@ $translations = [
         'business_listings' => 'Find Local Experts',
         'contribute' => 'Contribute',
         'sign_out' => 'Sign Out',
+        'sign_in' => 'Sign In',
         'block_text' => "
             Welcome!<br>
             Bridging Language Barriers in Your Community<br><br>
@@ -52,6 +53,7 @@ $translations = [
         'business_listings' => 'ابحث عن خبراء محليين',
         'contribute' => 'أضف القوائم',
         'sign_out' => 'تسجيل الخروج',
+        'sign_in' => 'تسجيل الدخول',
         'block_text' => "
             مرحبًا!<br>
             سد الفجوة اللغوية في مجتمعك<br><br>
@@ -71,6 +73,7 @@ $translations = [
         'business_listings' => 'Encuentra expertos locales',
         'contribute' => 'Contribuir listados',
         'sign_out' => 'Cerrar sesión',
+        'sign_in' => 'Iniciar sesión',
         'block_text' => "
             ¡Bienvenido!<br>
             Superando las barreras lingüísticas en tu comunidad<br><br>
@@ -112,7 +115,7 @@ $lang = $translations[$_SESSION['lang']];
                     <!-- User is not logged in -->
                     <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
                     <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
-                    <li><a href="SignIn.php">Sign In</a></li>
+                    <li><a href="SignIn.php"><?= $lang['sign_in'] ?>Sign In</a></li>
                 <?php else: ?>
                     <!-- User is logged in -->
                     <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
