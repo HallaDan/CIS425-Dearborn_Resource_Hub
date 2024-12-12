@@ -2,6 +2,13 @@
 session_start();
 require 'db.php'; // Database connection
 
+//language switch
+if (isset($_GET['lang'])) {
+    $_SESSION['lang'] = $_GET['lang'];
+} elseif (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'en'; // default language (for now?)
+}
+
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,6 +49,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$translations = [
+    'en' => [
+        'update_password' => 'Update Password',
+        'code' => 'Code',
+        'new_password' => 'New Password',
+        'confirm_new_password' => 'Confirm New Password',
+        'update' => 'Update',
+        'back_to_sign_in' => 'Back to Sign In'
+    ],
+    'ar' => [
+        'update_password' => 'تحديث كلمة المرور',
+        'code' => 'رمز',
+        'new_password' => 'كلمة مرور جديدة',
+        'confirm_new_password' => 'تأكيد كلمة المرور الجديدة',
+        'update' => 'تحديث',
+        'back_to_sign_in' => 'العودة إلى تسجيل الدخول'
+    ],
+    'es' => [
+        'update_password' => 'Actualizar contraseña',
+        'code' => 'Código',
+        'new_password' => 'Nueva contraseña',
+        'confirm_new_password' => 'Confirmar nueva contraseña',
+        'update' => 'Actualizar',
+        'back_to_sign_in' => 'Volver a iniciar sesión'
+    ],
+];
+
+$lang = $translations[$_SESSION['lang']];
+
 ?>
 
 <!DOCTYPE html>
@@ -49,8 +86,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/styles.css">
     <title>Update Password</title>
     <style>
+        .center-content-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: left;
+            padding: 20px;
+        }
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left; /* Center-align text for child elements */
+        }
+
         /* body */
         body {
             font-family: Arial, sans-serif;
@@ -131,26 +183,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Update Password</h1>
-        <?php if (!empty($message)): ?>
-            <p class="error"><?php echo htmlspecialchars($message); ?></p>
-        <?php endif; ?>
-        <form method="POST">
-            <label for="code">Code:</label>
-            <input type="number" name="code" id="code" required>
-
-            <label for="new_password">New Password:</label>
-            <input type="password" name="new_password" id="new_password" required>
-
-            <label for="confirm_password">Confirm New Password:</label>
-            <input type="password" name="confirm_password" id="confirm_password" required>
-
-            <button type="submit">Update</button>
+<div class="center-content-container"> 
+    <div class="language-selector">
+        <form method="GET" action="">
+            <label>Select Your Language:</label><br>
+            <input type="radio" name="lang" value="en" <?= $_SESSION['lang'] === 'en' ? 'checked' : '' ?>> English<br>
+            <input type="radio" name="lang" value="ar" <?= $_SESSION['lang'] === 'ar' ? 'checked' : '' ?>> Arabic<br>
+            <input type="radio" name="lang" value="es" <?= $_SESSION['lang'] === 'es' ? 'checked' : '' ?>> Spanish<br>
+            <button type="submit">Apply</button>
         </form>
-        <div class="footer">
-            <a href="SignIn.php">Back to Sign In</a>
+    </div>
+    <div class="center-content"> 
+        <div class="login-container">
+            <h1><?= $lang['update_password'] ?></h1>
+            <?php if (!empty($message)): ?>
+                <p class="error"><?php echo htmlspecialchars($message); ?></p>
+            <?php endif; ?>
+            <form method="POST">
+                <label for="code"><?= $lang['code'] ?></label>
+                <input type="number" name="code" id="code" required>
+
+                <label for="new_password"><?= $lang['new_password'] ?></label>
+                <input type="password" name="new_password" id="new_password" required>
+
+                <label for="confirm_password"><?= $lang['confirm_new_password'] ?></label>
+                <input type="password" name="confirm_password" id="confirm_password" required>
+
+                <button type="submit"><?= $lang['update'] ?></button>
+            </form>
+            <div class="footer">
+                <a href="SignIn.php"><?= $lang['back_to_sign_in'] ?></a>
+            </div>
         </div>
     </div>
+</div>
 </body>
 </html>
