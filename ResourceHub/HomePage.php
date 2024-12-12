@@ -115,7 +115,7 @@ $lang = $translations[$_SESSION['lang']];
                     <!-- User is not logged in -->
                     <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
                     <li><a href="SubmissionPage.php"><?= $lang['contribute'] ?></a></li>
-                    <li><a href="SignIn.php"><?= $lang['sign_in'] ?>Sign In</a></li>
+                    <li><a href="SignIn.php"><?= $lang['sign_in'] ?></a></li>
                 <?php else: ?>
                     <!-- User is logged in -->
                     <li><a href="BusinessListingPage.php"><?= $lang['business_listings'] ?></a></li>
